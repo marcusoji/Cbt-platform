@@ -17,7 +17,7 @@ yarn.lock
 .env.test
 .env.production
 .env.*.local
-
+.env.ini
 # ==================== LOGS ==================== #
 
 # Log files
