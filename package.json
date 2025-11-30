@@ -1,0 +1,21 @@
+{
+  "name": "cbt-platform-vercel",
+  "version": "1.0.0",
+  "description": "WAEC, NECO, JAMB CBT Platform - Vercel Deployment",
+  "main": "api/index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["cbt", "waec", "neco", "jamb", "exam", "supabase", "vercel"],
+  "author": "OJI MARCUS",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

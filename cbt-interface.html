@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Exam Interface</title>
+    <link rel="stylesheet" href="public/css/style.css">
+    <link rel="stylesheet" href="public/css/cbt-interface.css">
+</head>
+<body class="cbt-container">
+    <!-- CBT Header -->
+    <div class="cbt-header">
+        <div class="exam-info">
+            <h3 id="candidateName">Loading...</h3>
+            <p id="examDetails">Exam Type • Subject</p>
+        </div>
+        <div class="timer-display">
+            <div class="timer" id="timer">00:00:00</div>
+        </div>
+    </div>
+
+    <!-- Main CBT Content -->
+    <div class="cbt-main">
+        <!-- Question Panel -->
+        <div class="question-panel">
+            <div class="question-header">
+                <div class="question-number" id="questionNumber">Question 1 of 40</div>
+                <div class="question-actions">
+                    <button class="btn-icon btn-calculator" id="calculatorBtn" title="Calculator">
+                        🔢
+                    </button>
+                    <button class="btn-icon btn-flag" id="flagBtn" title="Mark for Review">
+                        🚩
+                    </button>
+                </div>
+            </div>
+
+            <div class="question-content">
+                <div class="question-text" id="questionText">
+                    Loading question...
+                </div>
+                <img id="questionImage" class="question-image" style="display: none;" alt="Question image">
+            </div>
+
+            <div class="options-container" id="optionsContainer">
+                <!-- Options will be dynamically loaded -->
+            </div>
+
+            <div class="control-buttons">
+                <button class="btn-control btn-previous" id="prevBtn">← Previous</button>
+                <button class="btn-control btn-next" id="nextBtn">Next →</button>
+            </div>
+        </div>
+
+        <!-- Navigation Sidebar -->
+        <div class="navigation-sidebar">
+            <h4 class="nav-title">Question Navigator</h4>
+            <div class="question-grid" id="questionGrid">
+                <!-- Question buttons will be dynamically generated -->
+            </div>
+
+            <div class="nav-legend">
+                <h5 style="font-size: 0.9rem; font-weight: 700; margin-bottom: 0.75rem;">Legend:</h5>
+                <div class="legend-item">
+                    <div class="legend-box legend-current"></div>
+                    <span>Current</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-answered"></div>
+                    <span>Answered</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-flagged"></div>
+                    <span>Flagged</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-box legend-unanswered"></div>
+                    <span>Not Answered</span>
+                </div>
+            </div>
+
+            <button class="btn-submit" id="submitBtn">
+                Submit Exam
+            </button>
+        </div>
+    </div>
+
+    <!-- Calculator Modal (Hidden by default) -->
+    <div class="calculator-modal" id="calculatorModal" style="display: none;">
+        <h4 style="margin-bottom: 1rem;">Calculator</h4>
+        <input type="text" class="calculator-display" id="calcDisplay" value="0" readonly>
+        <div class="calculator-buttons">
+            <button class="calc-btn" onclick="calcInput('7')">7</button>
+            <button class="calc-btn" onclick="calcInput('8')">8</button>
+            <button class="calc-btn" onclick="calcInput('9')">9</button>
+            <button class="calc-btn operator" onclick="calcInput('/')">÷</button>
+            
+            <button class="calc-btn" onclick="calcInput('4')">4</button>
+            <button class="calc-btn" onclick="calcInput('5')">5</button>
+            <button class="calc-btn" onclick="calcInput('6')">6</button>
+            <button class="calc-btn operator" onclick="calcInput('*')">×</button>
+            
+            <button class="calc-btn" onclick="calcInput('1')">1</button>
+            <button class="calc-btn" onclick="calcInput('2')">2</button>
+            <button class="calc-btn" onclick="calcInput('3')">3</button>
+            <button class="calc-btn operator" onclick="calcInput('-')">-</button>
+            
+            <button class="calc-btn" onclick="calcInput('0')">0</button>
+            <button class="calc-btn" onclick="calcInput('.')">.</button>
+            <button class="calc-btn equals" onclick="calcResult()">=</button>
+            <button class="calc-btn operator" onclick="calcInput('+')">+</button>
+            
+            <button class="calc-btn" onclick="calcClear()" style="grid-column: span 2;">C</button>
+            <button class="calc-btn" onclick="closeCalculator()" style="grid-column: span 2; background: #ef4444; color: white;">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        let currentQuestionIndex = 0;
+        let questions = [];
+        let answers = {};
+        let flaggedQuestions = new Set();
+        let sessionId = null;
+        let examDuration = 0;
+        let timerInterval = null;
+
+        // Get session data from URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionData = JSON.parse(localStorage.getItem('currentSession') || '{}');
+
+        // Initialize exam
+        async function initExam() {
+            const token = localStorage.getItem('token');
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+            if (!token || !sessionData.sessionId) {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            document.getElementById('candidateName').textContent = user.fullName || 'Candidate';
+            document.getElementById('examDetails').textContent = 
+                `${sessionData.examType} • ${sessionData.subject}`;
+
+            questions = sessionData.questions || [];
+            sessionId = sessionData.sessionId;
+            examDuration = sessionData.duration * 60; // Convert to seconds
+
+            generateQuestionGrid();
+            loadQuestion(0);
+            startTimer();
+        }
+
+        // Generate question navigation grid
+        function generateQuestionGrid() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'question-btn';
+                btn.textContent = index + 1;
+                btn.onclick = () => loadQuestion(index);
+                grid.appendChild(btn);
+            });
+
+            updateQuestionGrid();
+        }
+
+        // Load specific question
+        function loadQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+
+            currentQuestionIndex = index;
+            const question = questions[index];
+
+            document.getElementById('questionNumber').textContent = 
+                `Question ${index + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = question.questionText;
+
+            // Handle question image
+            const questionImage = document.getElementById('questionImage');
+            if (question.questionImage) {
+                questionImage.src = question.questionImage;
+                questionImage.style.display = 'block';
+            } else {
+                questionImage.style.display = 'none';
+            }
+
+            // Load options
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+
+            question.options.forEach(option => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                if (answers[question.id] === option.label) {
+                    optionDiv.classList.add('selected');
+                }
+
+                optionDiv.innerHTML = `
+                    <div class="option-label">${option.label}</div>
+                    <div class="option-text">${option.text}</div>
+                `;
+
+                optionDiv.onclick = () => selectOption(question.id, option.label, optionDiv);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            // Update flag button
+            const flagBtn = document.getElementById('flagBtn');
+            if (flaggedQuestions.has(question.id)) {
+                flagBtn.classList.add('active');
+            } else {
+                flagBtn.classList.remove('active');
+            }
+
+            // Update navigation buttons
+            document.getElementById('prevBtn').disabled = index === 0;
+            document.getElementById('nextBtn').disabled = index === questions.length - 1;
+
+            updateQuestionGrid();
+        }
+
+        // Select an option
+        async function selectOption(questionId, optionLabel, optionElement) {
+            answers[questionId] = optionLabel;
+
+            // Update UI
+            const allOptions = document.querySelectorAll('.option');
+            allOptions.forEach(opt => opt.classList.remove('selected'));
+            optionElement.classList.add('selected');
+
+            // Submit answer to backend
+            await submitAnswer(questionId, optionLabel);
+            updateQuestionGrid();
+        }
+
+        // Submit answer to backend
+        async function submitAnswer(questionId, selectedAnswer) {
+            const token = localStorage.getItem('token');
+
+            try {
+                await fetch(`${API_URL}/exam/submit-answer`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        sessionId,
+                        questionId,
+                        selectedAnswer,
+                        markedForReview: flaggedQuestions.has(questionId)
+                    })
+                });
+            } catch (error) {
+                console.error('Error submitting answer:', error);
+            }
+        }
+
+        // Update question grid styling
+        function updateQuestionGrid() {
+            const buttons = document.querySelectorAll('.question-btn');
+            buttons.forEach((btn, index) => {
+                const questionId = questions[index].id;
+                btn.className = 'question-btn';
+
+                if (index === currentQuestionIndex) {
+                    btn.classList.add('current');
+                } else if (flaggedQuestions.has(questionId)) {
+                    btn.classList.add('flagged');
+                } else if (answers[questionId]) {
+                    btn.classList.add('answered');
+                }
+            });
+        }
+
+        // Timer functions
+        function startTimer() {
+            let timeLeft = examDuration;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+
+                const timerDisplay = document.getElementById('timer');
+                timerDisplay.textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 300) { // Last 5 minutes
+                    timerDisplay.classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam(true); // Auto-submit
+                }
+            }, 1000);
+        }
+
+        // Navigation
+        document.getElementById('prevBtn').onclick = () => loadQuestion(currentQuestionIndex - 1);
+        document.getElementById('nextBtn').onclick = () => loadQuestion(currentQuestionIndex + 1);
+
+        // Flag question
+        document.getElementById('flagBtn').onclick = () => {
+            const questionId = questions[currentQuestionIndex].id;
+            if (flaggedQuestions.has(questionId)) {
+                flaggedQuestions.delete(questionId);
+            } else {
+                flaggedQuestions.add(questionId);
+            }
+            loadQuestion(currentQuestionIndex);
+        };
+
+        // Calculator
+        document.getElementById('calculatorBtn').onclick = () => {
+            document.getElementById('calculatorModal').style.display = 'block';
+        };
+
+        function closeCalculator() {
+            document.getElementById('calculatorModal').style.display = 'none';
+        }
+
+        function calcInput(value) {
+            const display = document.getElementById('calcDisplay');
+            if (display.value === '0') {
+                display.value = value;
+            } else {
+                display.value += value;
+            }
+        }
+
+        function calcResult() {
+            const display = document.getElementById('calcDisplay');
+            try {
+                display.value = eval(display.value);
+            } catch (e) {
+                display.value = 'Error';
+            }
+        }
+
+        function calcClear() {
+            document.getElementById('calcDisplay').value = '0';
+        }
+
+        // Submit exam
+        document.getElementById('submitBtn').onclick = () => {
+            const answeredCount = Object.keys(answers).length;
+            const totalQuestions = questions.length;
+
+            if (answeredCount < totalQuestions) {
+                if (!confirm(`You have answered ${answeredCount} out of ${totalQuestions} questions. Are you sure you want to submit?`)) {
+                    return;
+                }
+            }
+
+            submitExam(false);
+        };
+
+        async function submitExam(autoSubmit) {
+            if (timerInterval) clearInterval(timerInterval);
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/exam/complete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ sessionId })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('examResults', JSON.stringify(data));
+                    window.location.href = 'results.html';
+                } else {
+                    alert('Error submitting exam. Please try again.');
+                }
+            } catch (error) {
+                alert('Network error. Please check your connection.');
+            }
+        }
+
+        // Initialize on page load
+        initExam();
+
+        // Prevent accidental page close
+        window.addEventListener('beforeunload', (e) => {
+            e.preventDefault();
+            e.returnValue = '';
+        });
+    </script>
+</body>
+</html>

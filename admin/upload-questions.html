@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Questions - Admin</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="dashboard.html" class="logo">
+                    <div class="logo-icon">👨‍💼</div>
+                    <span>Admin Panel</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="upload-questions.html" class="btn btn-primary">Upload Questions</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="padding: 2rem 0;">
+        <div class="card" style="max-width: 900px; margin: 0 auto;">
+            <div class="card-header">
+                <h2 class="card-title">Upload Questions (Bulk)</h2>
+                <p style="color: #6b7280;">Upload multiple questions using JSON format</p>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- JSON Format Example -->
+            <div style="background: #f9fafb; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.1rem; margin-bottom: 1rem;">JSON Format Example:</h3>
+                <pre style="background: #1f2937; color: #10b981; padding: 1rem; border-radius: 8px; overflow-x: auto; font-size: 0.85rem;"><code>[
+  {
+    "examType": "JAMB",
+    "subject": "Mathematics",
+    "year": 2023,
+    "topic": "Algebra",
+    "questionType": "multiple-choice",
+    "questionText": "Solve for x: 2x + 5 = 15",
+    "questionImage": "",
+    "options": [
+      {"label": "A", "text": "5"},
+      {"label": "B", "text": "10"},
+      {"label": "C", "text": "7.5"},
+      {"label": "D", "text": "2.5"}
+    ],
+    "correctAnswer": "A",
+    "explanation": "2x = 15 - 5, 2x = 10, x = 5",
+    "difficulty": "easy"
+  }
+]</code></pre>
+            </div>
+
+            <!-- Upload Form -->
+            <div class="form-group">
+                <label class="form-label">Paste JSON Data</label>
+                <textarea 
+                    class="form-input" 
+                    id="questionsJSON" 
+                    rows="15" 
+                    placeholder="Paste your questions JSON here..."
+                    style="font-family: 'Courier New', monospace; font-size: 0.9rem;"
+                ></textarea>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-primary" onclick="uploadQuestions()" style="flex: 1;">
+                    📤 Upload Questions
+                </button>
+                <button class="btn btn-outline" onclick="validateJSON()" style="flex: 1;">
+                    ✓ Validate JSON
+                </button>
+            </div>
+
+            <!-- Quick Add Single Question -->
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e5e7eb;">
+                <h3 style="font-size: 1.3rem; margin-bottom: 1.5rem;">Or Add Single Question</h3>
+
+                <form id="singleQuestionForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label class="form-label">Exam Type</label>
+                            <select class="form-select" id="examType" required>
+                                <option value="">Select</option>
+                                <option value="WAEC">WAEC</option>
+                                <option value="NECO">NECO</option>
+                                <option value="JAMB">JAMB</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Subject</label>
+                            <input type="text" class="form-input" id="subject" placeholder="e.g., Mathematics" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <input type="number" class="form-input" id="year" placeholder="2023" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Topic</label>
+                            <input type="text" class="form-input" id="topic" placeholder="e.g., Algebra">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Question Text</label>
+                        <textarea class="form-input" id="questionText" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Options (4 required)</label>
+                        <div style="display: grid; gap: 0.75rem;">
+                            <input type="text" class="form-input" id="optionA" placeholder="Option A" required>
+                            <input type="text" class="form-input" id="optionB" placeholder="Option B" required>
+                            <input type="text" class="form-input" id="optionC" placeholder="Option C" required>
+                            <input type="text" class="form-input" id="optionD" placeholder="Option D" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Correct Answer</label>
+                        <select class="form-select" id="correctAnswer" required>
+                            <option value="">Select correct answer</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Explanation (Optional)</label>
+                        <textarea class="form-input" id="explanation" rows="2"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-success btn-full">
+                        ✓ Add Question
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+
+        function validateJSON() {
+            const jsonData = document.getElementById('questionsJSON').value;
+
+            try {
+                const questions = JSON.parse(jsonData);
+
+                if (!Array.isArray(questions)) {
+                    throw new Error('JSON must be an array');
+                }
+
+                questions.forEach((q, index) => {
+                    if (!q.examType || !q.subject || !q.questionText || !q.correctAnswer) {
+                        throw new Error(`Question ${index + 1}: Missing required fields`);
+                    }
+                    if (!q.options || q.options.length !== 4) {
+                        throw new Error(`Question ${index + 1}: Must have exactly 4 options`);
+                    }
+                });
+
+                showAlert(`✅ Valid! Found ${questions.length} questions ready to upload.`, 'success');
+            } catch (error) {
+                showAlert(`❌ Invalid JSON: ${error.message}`, 'error');
+            }
+        }
+
+        async function uploadQuestions() {
+            const jsonData = document.getElementById('questionsJSON').value;
+
+            try {
+                const questions = JSON.parse(jsonData);
+
+                if (!Array.isArray(questions) || questions.length === 0) {
+                    throw new Error('Invalid JSON or empty array');
+                }
+
+                const token = localStorage.getItem('token');
+
+                const response = await fetch(`${API_URL}/admin/upload-questions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ questions })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert(`✅ Successfully uploaded ${data.count} questions!`, 'success');
+                    document.getElementById('questionsJSON').value = '';
+                } else {
+                    showAlert(`❌ Upload failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+
+        document.getElementById('singleQuestionForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const question = {
+                examType: document.getElementById('examType').value,
+                subject: document.getElementById('subject').value,
+                year: parseInt(document.getElementById('year').value),
+                topic: document.getElementById('topic').value,
+                questionType: 'multiple-choice',
+                questionText: document.getElementById('questionText').value,
+                options: [
+                    { label: 'A', text: document.getElementById('optionA').value },
+                    { label: 'B', text: document.getElementById('optionB').value },
+                    { label: 'C', text: document.getElementById('optionC').value },
+                    { label: 'D', text: document.getElementById('optionD').value }
+                ],
+                correctAnswer: document.getElementById('correctAnswer').value,
+                explanation: document.getElementById('explanation').value,
+                difficulty: 'medium'
+            };
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/upload-questions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ questions: [question] })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('✅ Question added successfully!', 'success');
+                    document.getElementById('singleQuestionForm').reset();
+                } else {
+                    showAlert(`❌ Failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showAlert(`❌ Error: ${error.message}`, 'error');
+            }
+        });
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
+                    ${message}
+                </div>
+            `;
+
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        // Check admin access
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        
+        if (!token || user.role !== 'admin') {
+            window.location.href = '../login.html';
+        }
+    </script>
+</body>
+</html>

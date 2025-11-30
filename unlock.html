@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unlock Premium - CBT Practice</title>
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📚</div>
+                    <span>CBT Practice</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="auth-container">
+        <div class="auth-card" style="max-width: 550px;">
+            <div class="auth-header">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 2.5rem;">
+                    🔓
+                </div>
+                <h1 class="auth-title">Unlock Premium Access</h1>
+                <p class="auth-subtitle">Enter your activation code to unlock 9 months of unlimited access</p>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <form id="unlockForm">
+                <div class="form-group">
+                    <label class="form-label">Activation Code</label>
+                    <input 
+                        type="text" 
+                        class="form-input" 
+                        id="unlockCode" 
+                        placeholder="CBT-XXXXX-XXXXX"
+                        required
+                        style="text-align: center; font-size: 1.2rem; letter-spacing: 2px; text-transform: uppercase;"
+                    >
+                    <p style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem;">
+                        Enter the code you received after payment
+                    </p>
+                </div>
+
+                <button type="submit" class="btn btn-success btn-full" id="unlockBtn" style="padding: 1rem; font-size: 1.1rem;">
+                    🔓 Unlock Premium Access
+                </button>
+            </form>
+
+            <div style="margin-top: 2rem; padding: 1.5rem; background: #f3f4f6; border-radius: 12px;">
+                <h4 style="font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: #1f2937;">
+                    Don't have a code yet?
+                </h4>
+                
+                <div style="background: white; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                    <h5 style="font-weight: 600; margin-bottom: 0.5rem;">Payment Details:</h5>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin: 0.25rem 0;"><strong>Bank:</strong> OPAY</p>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin: 0.25rem 0;"><strong>Account:</strong> 9042007583</p>
+                    <p style="color: #6b7280; font-size: 0.9rem; margin: 0.25rem 0;"><strong>Name:</strong> Marcus Ifeanyichukwu Oji</p>
+                    <p style="color: #1f2937; font-size: 1.1rem; font-weight: 700; margin-top: 0.75rem;">Amount: ₦1,500</p>
+                </div>
+
+                <a href="https://wa.me/2349042007583?text=Hi, I just made payment for CBT premium access. My email is [YOUR EMAIL]" 
+                   class="btn whatsapp-btn btn-full" 
+                   target="_blank"
+                   style="background: #25D366; color: white; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                    💬 Contact WhatsApp for Code
+                </a>
+
+                <p style="color: #6b7280; font-size: 0.85rem; text-align: center; margin-top: 1rem;">
+                    After payment, contact us with your payment proof and email<br>
+                    You'll receive your activation code within minutes
+                </p>
+            </div>
+
+            <div class="auth-footer">
+                <a href="dashboard.html" class="auth-link">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+
+        document.getElementById('unlockForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const unlockCode = document.getElementById('unlockCode').value.trim().toUpperCase();
+
+            if (!unlockCode) {
+                showAlert('Please enter an activation code', 'error');
+                return;
+            }
+
+            const unlockBtn = document.getElementById('unlockBtn');
+            unlockBtn.disabled = true;
+            unlockBtn.textContent = '🔄 Verifying Code...';
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/auth/unlock`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code: unlockCode })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showAlert('✅ Premium access unlocked successfully!', 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else {
+                    showAlert(data.error || 'Invalid or already used activation code', 'error');
+                    unlockBtn.disabled = false;
+                    unlockBtn.textContent = '🔓 Unlock Premium Access';
+                }
+            } catch (error) {
+                showAlert('Network error. Please check your connection.', 'error');
+                unlockBtn.disabled = false;
+                unlockBtn.textContent = '🔓 Unlock Premium Access';
+            }
+        });
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
+                    ${message}
+                </div>
+            `;
+
+            setTimeout(() => {
+                if (type !== 'success') {
+                    alertContainer.innerHTML = '';
+                }
+            }, 5000);
+        }
+ // Check if user is logged in
+        if (!localStorage.getItem('token')) {
+            window.location.href = 'login.html';
+        }
+       
+    </script>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CBT Practice Platform</title>
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📚</div>
+                    <span>CBT Practice</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><span id="userNameNav">User</span></li>
+                        <li><a href="payment.html">Pay for Premium</a></li>
+                        <li><a href="#" onclick="logout()" class="btn btn-outline">Logout</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-container container">
+        <div class="dashboard-header">
+            <div class="user-info">
+                <div class="user-welcome">
+                    <h2>Welcome back, <span id="userName">Student</span>! 👋</h2>
+                    <p id="accessStatus">Loading access status...</p>
+                </div>
+                <div>
+                    <span class="access-badge" id="accessBadge">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Access Locked Message (Hidden by default) -->
+        <div id="accessLockedCard" class="card" style="display: none;">
+            <div class="payment-lock">
+                <div class="lock-icon">🔒</div>
+                <h2>Your Trial Has Expired</h2>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-top: 1rem;">
+                    Unlock premium access to continue practicing
+                </p>
+
+                <div class="payment-info">
+                    <div class="price-tag">₦1,500</div>
+                    <p style="font-size: 1.1rem; color: #1f2937;">
+                        <strong>9 Months</strong> Unlimited Access
+                    </p>
+
+                    <div class="bank-details">
+                        <h3 style="margin-bottom: 1rem;">Payment Details</h3>
+                        <p><strong>Bank:</strong> <span>OPAY</span></p>
+                        <p><strong>Account Number:</strong> <span>9042007583</span></p>
+                        <p><strong>Account Name:</strong> <span>MARCUS IFEANYICHUKWU OJI</span></p>
+                    </div>
+
+                    <p style="margin-top: 1.5rem; color: #6b7280;">
+                        After payment, contact us for your activation code
+                    </p>
+
+                    <a href="https://wa.me/2349042007583?text=Hi, I just made payment for CBT access" 
+                       class="btn whatsapp-btn" target="_blank">
+                        💬 WhatsApp: +234 9042007583
+                    </a>
+
+                    <div style="margin-top: 2rem;">
+                        <a href="unlock.html" class="btn btn-primary btn-full">
+                            I Have an Unlock Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exam Selection (Visible when access is active) -->
+        <div id="examSelectionSection" style="display: none;">
+            <h2 style="font-size: 2rem; margin: 2rem 0 1rem;">Select Your Exam</h2>
+            
+            <div class="exam-grid">
+                <div class="exam-card" onclick="selectExam('WAEC')">
+                    <div class="exam-icon">W</div>
+                    <h3>WAEC</h3>
+                    <p>West African Examinations Council practice questions</p>
+                    <button class="btn btn-primary btn-full">Start Practice</button>
+                </div>
+
+                <div class="exam-card" onclick="selectExam('NECO')">
+                    <div class="exam-icon" style="background: linear-gradient(135deg, #10b981, #059669);">N</div>
+                    <h3>NECO</h3>
+                    <p>National Examinations Council past questions</p>
+                    <button class="btn btn-success btn-full">Start Practice</button>
+                </div>
+
+                <div class="exam-card" onclick="selectExam('JAMB')">
+                    <div class="exam-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">J</div>
+                    <h3>JAMB</h3>
+                    <p>Joint Admissions and Matriculation Board mock exams</p>
+                    <button class="btn btn-danger btn-full">Start Practice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Exam Configuration Modal -->
+    <div id="examConfigModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 500px; margin: 2rem;">
+            <div class="card-header">
+                <h2 class="card-title">Configure Your Exam</h2>
+            </div>
+
+            <div id="alertContainer"></div>
+
+            <div class="form-group">
+                <label class="form-label">Exam Type</label>
+                <input type="text" class="form-input" id="selectedExamType" readonly>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Subject</label>
+                <select class="form-select" id="subjectSelect" required>
+                    <option value="">Select Subject</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Year (Optional)</label>
+                <select class="form-select" id="yearSelect">
+                    <option value="">All Years</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Number of Questions</label>
+                <select class="form-select" id="numberOfQuestions">
+                    <option value="20">20 Questions</option>
+                    <option value="40" selected>40 Questions</option>
+                    <option value="60">60 Questions</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+                <button class="btn btn-outline" onclick="closeExamModal()" style="flex: 1;">Cancel</button>
+                <button class="btn btn-primary" onclick="startExam()" style="flex: 1;" id="startExamBtn">
+                    Start Exam
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+        let currentExamType = '';
+
+        async function loadProfile() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load profile');
+                }
+
+                const data = await response.json();
+                const user = data.user;
+                const access = data.access;
+
+                document.getElementById('userName').textContent = user.fullName.split(' ')[0];
+                document.getElementById('userNameNav').textContent = user.fullName.split(' ')[0];
+
+                if (access.hasAccess) {
+                    document.getElementById('examSelectionSection').style.display = 'block';
+                    document.getElementById('accessLockedCard').style.display = 'none';
+                    
+                    const badge = document.getElementById('accessBadge');
+                    if (access.type === 'premium') {
+                        badge.className = 'access-badge badge-premium';
+                        badge.textContent = '✓ Premium Active';
+                        
+                        const expiryDate = new Date(access.expiresAt).toLocaleDateString();
+                        document.getElementById('accessStatus').textContent = 
+                            `Premium access expires on ${expiryDate}`;
+                    } else {
+                        badge.className = 'access-badge badge-trial';
+                        badge.textContent = '⏰ Trial Active';
+                        
+                        const expiryDate = new Date(access.expiresAt).toLocaleDateString();
+                        document.getElementById('accessStatus').textContent = 
+                            `Trial expires on ${expiryDate}`;
+                    }
+                } else {
+                    document.getElementById('examSelectionSection').style.display = 'none';
+                    document.getElementById('accessLockedCard').style.display = 'block';
+                    
+                    const badge = document.getElementById('accessBadge');
+                    badge.className = 'access-badge badge-expired';
+                    badge.textContent = '🔒 Access Expired';
+                    
+                    document.getElementById('accessStatus').textContent = 'Unlock premium to continue';
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showAlert('Failed to load profile', 'error');
+            }
+        }
+
+        async function selectExam(examType) {
+            currentExamType = examType;
+            document.getElementById('selectedExamType').value = examType;
+            document.getElementById('examConfigModal').style.display = 'flex';
+
+            await loadSubjects(examType);
+        }
+
+        async function loadSubjects(examType) {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/exams/${examType}/subjects`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                const subjectSelect = document.getElementById('subjectSelect');
+                subjectSelect.innerHTML = '<option value="">Select Subject</option>';
+
+                data.subjects.forEach(subject => {
+                    const option = document.createElement('option');
+                    option.value = subject;
+                    option.textContent = subject;
+                    subjectSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading subjects:', error);
+            }
+        }
+
+        document.getElementById('subjectSelect').addEventListener('change', async (e) => {
+            const subject = e.target.value;
+            if (!subject) return;
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/exams/${currentExamType}/${subject}/years`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                const yearSelect = document.getElementById('yearSelect');
+                yearSelect.innerHTML = '<option value="">All Years</option>';
+
+                data.years.forEach(year => {
+                    const option = document.createElement('option');
+                    option.value = year;
+                    option.textContent = year;
+                    yearSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading years:', error);
+            }
+        });
+
+        async function startExam() {
+            const subject = document.getElementById('subjectSelect').value;
+            const year = document.getElementById('yearSelect').value;
+            const numberOfQuestions = document.getElementById('numberOfQuestions').value;
+
+            if (!subject) {
+                showAlert('Please select a subject', 'error');
+                return;
+            }
+
+            const startBtn = document.getElementById('startExamBtn');
+            startBtn.disabled = true;
+            startBtn.textContent = 'Loading Questions...';
+
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/exam/start`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        examType: currentExamType,
+                        subject,
+                        year: year || null,
+                        numberOfQuestions: parseInt(numberOfQuestions)
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    localStorage.setItem('currentSession', JSON.stringify(data));
+                    window.location.href = 'cbt-interface.html';
+                } else {
+                    showAlert(data.error || 'Failed to start exam', 'error');
+                    startBtn.disabled = false;
+                    startBtn.textContent = 'Start Exam';
+                }
+            } catch (error) {
+                showAlert('Network error. Please try again.', 'error');
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Exam';
+            }
+        }
+
+        function closeExamModal() {
+            document.getElementById('examConfigModal').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = 'login.html';
+        }
+
+        function showAlert(message, type) {
+            const alertContainer = document.getElementById('alertContainer');
+            alertContainer.innerHTML = `
+                <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
+                    ${message}
+                </div>
+            `;
+
+            setTimeout(() => {
+                alertContainer.innerHTML = '';
+            }, 5000);
+        }
+
+        loadProfile();
+    </script>
+</body>
+</html>

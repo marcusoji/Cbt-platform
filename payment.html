@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Information - CBT Practice</title>
+    <link rel="stylesheet" href="public/css/style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📚</div>
+                    <span>CBT Practice</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="dashboard.html">Dashboard</a></li>
+                        <li><a href="unlock.html" class="btn btn-primary">Unlock Premium</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="padding: 3rem 0;">
+        <div style="max-width: 900px; margin: 0 auto;">
+            
+            <!-- Header Section -->
+            <div style="text-align: center; margin-bottom: 3rem;">
+                <div style="width: 100px; height: 100px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; font-size: 3rem;">
+                    💳
+                </div>
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: #1f2937;">
+                    Premium Access Payment
+                </h1>
+                <p style="font-size: 1.2rem; color: #6b7280;">
+                    Get 9 months unlimited access to all WAEC, NECO & JAMB past questions
+                </p>
+            </div>
+
+            <!-- Pricing Card -->
+            <div class="card" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; text-align: center; margin-bottom: 2rem;">
+                <div style="font-size: 4rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    ₦1,500
+                </div>
+                <div style="font-size: 1.3rem; opacity: 0.9; margin-bottom: 2rem;">
+                    for 9 Months Full Access
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; text-align: left;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                        ✅ Unlimited Practice Sessions
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                        ✅ All Past Questions
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                        ✅ Detailed Explanations
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                        ✅ Performance Analytics
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                        ✅ Mobile & Desktop Access
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 8px;">
+                        ✅ 9 Months Full Access
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Instructions -->
+            <div class="card">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem; color: #1f2937;">
+                    💰 Payment Instructions
+                </h2>
+
+                <!-- Step 1 -->
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #3b82f6;">
+                    <h3 style="color: #1e40af; margin-bottom: 1rem; font-size: 1.3rem;">
+                        Step 1: Transfer to Our Bank Account
+                    </h3>
+                    <div class="bank-details" style="background: white; padding: 1.5rem; border-radius: 8px;">
+                        <p style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <strong>Bank Name:</strong>
+                            <span style="color: #1f2937; font-weight: 600;">OPAY</span>
+                        </p>
+                        <p style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <strong>Account Number:</strong>
+                            <span style="font-family: 'Courier New', monospace; font-size: 1.2rem; color: #1e40af; font-weight: 700;">
+                                9042007583
+                            </span>
+                        </p>
+                        <p style="display: flex; justify-content: space-between; padding: 0.75rem 0; border-bottom: 1px solid #e5e7eb;">
+                            <strong>Account Name:</strong>
+                            <span style="color: #1f2937; font-weight: 600;">MARCUS IFEANYICHUKWU OJI</span>
+                        </p>
+                        <p style="display: flex; justify-content: space-between; padding: 0.75rem 0;">
+                            <strong>Amount:</strong>
+                            <span style="font-size: 1.5rem; color: #10b981; font-weight: 700;">₦1,500.00</span>
+                        </p>
+                    </div>
+                    <button onclick="copyAccountNumber()" class="btn btn-primary btn-full" style="margin-top: 1rem;">
+                        📋 Copy Account Number
+                    </button>
+                </div>
+
+                <!-- Step 2 -->
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; border-left: 4px solid #10b981;">
+                    <h3 style="color: #065f46; margin-bottom: 1rem; font-size: 1.3rem;">
+                        Step 2: Contact Us After Payment
+                    </h3>
+                    <p style="color: #374151; margin-bottom: 1rem; line-height: 1.7;">
+                        After making the payment, contact us via WhatsApp with:
+                    </p>
+                    <ul style="list-style: none; padding-left: 0; color: #374151; line-height: 2;">
+                        <li>✅ Your payment screenshot</li>
+                        <li>✅ Your registered email address</li>
+                        <li>✅ Transaction reference (if available)</li>
+                    </ul>
+                    <a href="https://wa.me/2349042007583?text=Hi, I just made payment for CBT premium access. My email is: " 
+                       class="btn btn-success btn-full" 
+                       target="_blank"
+                       style="margin-top: 1rem; background: #25D366; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <span style="font-size: 1.5rem;">💬</span>
+                        <span>WhatsApp: +234 9042007583</span>
+                    </a>
+                </div>
+
+                <!-- Step 3 -->
+                <div style="background: #f9fafb; padding: 1.5rem; border-radius: 12px; border-left: 4px solid #f59e0b;">
+                    <h3 style="color: #92400e; margin-bottom: 1rem; font-size: 1.3rem;">
+                        Step 3: Get Your Activation Code
+                    </h3>
+                    <p style="color: #374151; margin-bottom: 1rem; line-height: 1.7;">
+                        We'll verify your payment and send you a unique activation code within <strong>5-10 minutes</strong> (usually instant).
+                    </p>
+                    <p style="color: #374151; margin-bottom: 1rem; line-height: 1.7;">
+                        The code will look like this:
+                    </p>
+                    <div style="background: #1f2937; padding: 1rem; border-radius: 8px; text-align: center;">
+                        <code style="color: #10b981; font-size: 1.2rem; font-weight: 700; font-family: 'Courier New', monospace;">
+                            CBT-1234567890-ABCDEFGHI
+                        </code>
+                    </div>
+                    <a href="unlock.html" class="btn btn-primary btn-full" style="margin-top: 1rem;">
+                        🔓 I Have My Activation Code
+                    </a>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="card">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem; color: #1f2937;">
+                    ❓ Frequently Asked Questions
+                </h2>
+
+                <div class="faq-item" style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #1e40af; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                        How long does verification take?
+                    </h3>
+                    <p style="color: #6b7280; line-height: 1.7;">
+                        Usually within 5-10 minutes during business hours (9 AM - 8 PM). We process payments 7 days a week!
+                    </p>
+                </div>
+
+                <div class="faq-item" style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #1e40af; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                        What if I don't receive my code?
+                    </h3>
+                    <p style="color: #6b7280; line-height: 1.7;">
+                        Please check your WhatsApp messages. If you still haven't received it after 30 minutes, send us another message with your payment proof.
+                    </p>
+                </div>
+
+                <div class="faq-item" style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #1e40af; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                        Can I pay with card or USSD?
+                    </h3>
+                    <p style="color: #6b7280; line-height: 1.7;">
+                        Yes! You can pay via bank transfer, USSD, or mobile banking. Just transfer ₦1,500 to the account above.
+                    </p>
+                </div>
+
+                <div class="faq-item" style="margin-bottom: 1.5rem;">
+                    <h3 style="color: #1e40af; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                        Is my payment secure?
+                    </h3>
+                    <p style="color: #6b7280; line-height: 1.7;">
+                        Absolutely! All payments go directly to our verified bank account. Your financial information is never stored on our platform.
+                    </p>
+                </div>
+
+                <div class="faq-item">
+                    <h3 style="color: #1e40af; margin-bottom: 0.5rem; font-size: 1.1rem;">
+                        Can I get a refund?
+                    </h3>
+                    <p style="color: #6b7280; line-height: 1.7;">
+                        Refunds are available within 7 days if you haven't used your activation code. Contact us via WhatsApp for refund requests.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Support Section -->
+            <div class="card" style="background: linear-gradient(135deg, #eff6ff, #dbeafe); border: 2px solid #3b82f6;">
+                <div style="text-align: center;">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 1rem; color: #1e40af;">
+                        Need Help? We're Here! 💙
+                    </h2>
+                    <p style="color: #1e3a8a; margin-bottom: 1.5rem; font-size: 1.1rem;">
+                        Our support team is available 9 AM - 8 PM daily
+                    </p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <a href="https://wa.me/2349042007583" class="btn btn-success" target="_blank">
+                            💬 WhatsApp Support
+                        </a>
+                        <a href="mailto:marcuoji@gmail.com" class="btn btn-outline">
+                            📧 Email Support
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer style="background: #1f2937; color: white; padding: 2rem 0; text-align: center; margin-top: 4rem;">
+        <div class="container">
+            <p style="color: #9ca3af;">&copy; 2025 CBT Practice Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function copyAccountNumber() {
+            const accountNumber = '1234567890';
+            navigator.clipboard.writeText(accountNumber).then(() => {
+                alert('✅ Account number copied to clipboard!\n\n' + accountNumber);
+            }).catch(err => {
+                alert('Account Number: ' + accountNumber + '\n\nPlease copy manually.');
+            });
+        }
+
+        // Check if user is logged in
+        const token = localStorage.getItem('token');
+        if (!token) {
+            // Redirect to login
+            if (confirm('You need to be logged in to make a payment. Go to login page?')) {
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>

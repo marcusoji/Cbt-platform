@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBT Practice Platform - WAEC, NECO, JAMB</title>
+    <link rel="stylesheet" href="public/css/style.css">
+    <style>
+        .hero {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95)),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23667eea" width="1200" height="600"/></svg>');
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+            border-radius: 0 0 50% 50% / 0 0 5% 5%;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.8s;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .features {
+            padding: 4rem 0;
+            background: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            color: white;
+        }
+
+        .pricing {
+            padding: 4rem 0;
+            background: linear-gradient(to bottom, white, #f3f4f6);
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            max-width: 500px;
+            margin: 2rem auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 3px solid #667eea;
+        }
+
+        .price {
+            font-size: 4rem;
+            font-weight: 700;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .price-features {
+            list-style: none;
+            margin: 2rem 0;
+        }
+
+        .price-features li {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .price-features li:before {
+            content: "✓";
+            color: #10b981;
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📚</div>
+                    <span>CBT Practice</span>
+                </a>
+                <nav>
+                    <ul>
+                        <li><a href="#features">Features</a></li>
+                        <li><a href="#pricing">Pricing</a></li>
+                        <li><a href="login.html" class="btn btn-outline">Login</a></li>
+                        <li><a href="register.html" class="btn btn-primary">Get Started</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>🎓 Master Your Exams with Confidence</h1>
+            <p>Complete WAEC, NECO & JAMB Past Questions with Professional CBT Interface</p>
+            <div class="hero-buttons">
+                <a href="register.html" class="btn btn-primary" style="padding: 1rem 2rem; font-size: 1.1rem;">
+                    Start Free Trial
+                </a>
+                <a href="#features" class="btn btn-outline" style="padding: 1rem 2rem; font-size: 1.1rem; background: white; color: #667eea;">
+                    Learn More
+                </a>
+            </div>
+            <p style="margin-top: 1.5rem; font-size: 1rem;">✨ 3 Days Free Trial • No Credit Card Required</p>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">Why Choose Our Platform?</h2>
+            <p style="text-align: center; color: #6b7280; font-size: 1.1rem;">Everything you need to ace your exams</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Complete Past Questions</h3>
+                    <p>Access thousands of authentic WAEC, NECO, and JAMB past questions with detailed solutions</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💻</div>
+                    <h3>Real CBT Experience</h3>
+                    <p>Practice with an interface identical to actual exam conditions</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⏱️</div>
+                    <h3>Timed Practice</h3>
+                    <p>Simulate real exam conditions with countdown timers and time management</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Instant Results</h3>
+                    <p>Get immediate feedback with detailed performance analysis</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔖</div>
+                    <h3>Mark & Review</h3>
+                    <p>Flag questions for review and navigate easily between questions</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Practice anywhere, anytime on your phone, tablet, or computer</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 style="text-align: center; font-size: 2.5rem; margin-bottom: 1rem;">Simple, Affordable Pricing</h2>
+            <p style="text-align: center; color: #6b7280; font-size: 1.1rem; margin-bottom: 2rem;">Get unlimited access to all features</p>
+
+            <div class="pricing-card">
+                <div style="text-align: center;">
+                    <h3 style="font-size: 1.5rem; color: #1f2937;">Premium Access</h3>
+                    <div class="price">₦1,500</div>
+                    <p style="color: #6b7280;">for 9 months</p>
+                </div>
+
+                <ul class="price-features">
+                    <li>Unlimited Practice Sessions</li>
+                    <li>All WAEC Past Questions</li>
+                    <li>All NECO Past Questions</li>
+                    <li>All JAMB Past Questions</li>
+                    <li>Detailed Explanations</li>
+                    <li>Performance Analytics</li>
+                    <li>Mobile & Desktop Access</li>
+                    <li>9 Months Full Access</li>
+                </ul>
+
+                <a href="register.html" class="btn btn-primary btn-full" style="padding: 1rem; font-size: 1.1rem;">
+                    Get Started Now
+                </a>
+
+                <p style="text-align: center; margin-top: 1rem; color: #6b7280; font-size: 0.9rem;">
+                    💡 Start with 3 days free trial
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <footer style="background: #1f2937; color: white; padding: 3rem 0; text-align: center;">
+        <div class="container">
+            <div class="logo" style="color: white; margin-bottom: 1rem; justify-content: center;">
+                <div class="logo-icon">📚</div>
+                <span>CBT Practice Platform</span>
+            </div>
+            <p style="color: #9ca3af; margin-bottom: 1rem;">Your trusted partner for exam success</p>
+            <p style="color: #6b7280; font-size: 0.9rem;">&copy; 2025 CBT Practice Platform. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

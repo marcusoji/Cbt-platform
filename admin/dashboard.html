@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CBT Platform</title>
+    <link rel="stylesheet" href="../public/css/style.css">
+    <style>
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .admin-sidebar {
+            background: #1f2937;
+            color: white;
+            padding: 2rem 1rem;
+        }
+
+        .admin-content {
+            background: #f3f4f6;
+            padding: 2rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-menu a {
+            color: #d1d5db;
+            text-decoration: none;
+            padding: 0.75rem 1rem;
+            display: block;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background: #374151;
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2563eb;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        .admin-section {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .code-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .code-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .code-text {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 1.1rem;
+        }
+
+        .code-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-available {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-used {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        @media (max-width: 768px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-sidebar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <div class="admin-sidebar">
+            <div class="logo" style="color: white; margin-bottom: 2rem;">
+                <div class="logo-icon">👨‍💼</div>
+                <span>Admin Panel</span>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="dashboard.html" class="active">📊 Dashboard</a></li>
+                <li><a href="upload-questions.html">📝 Upload Questions</a></li>
+                <li><a href="manage-codes.html">🔑 Manage Codes</a></li>
+                <li><a href="users.html">👥 Users</a></li>
+                <li><a href="../dashboard.html">🏠 User Dashboard</a></li>
+                <li><a href="#" onclick="logout()">🚪 Logout</a></li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="admin-content">
+            <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Admin Dashboard</h1>
+                <p style="color: #6b7280;">Manage your CBT platform</p>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-value" id="totalUsers">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Premium Users</div>
+                    <div class="stat-value" id="premiumUsers" style="color: #10b981;">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Trial Users</div>
+                    <div class="stat-value" id="trialUsers" style="color: #f59e0b;">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Total Questions</div>
+                    <div class="stat-value" id="totalQuestions" style="color: #8b5cf6;">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Exam Sessions</div>
+                    <div class="stat-value" id="totalSessions" style="color: #ef4444;">-</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-label">Active Codes</div>
+                    <div class="stat-value" id="activeCodes" style="color: #06b6d4;">-</div>
+                </div>
+            </div>
+
+            <!-- Generate Codes Section -->
+            <div class="admin-section">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Generate Unlock Codes</h2>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+                    <div class="form-group">
+                        <label class="form-label">Duration (Months)</label>
+                        <input type="number" class="form-input" id="duration" value="9" min="1" max="24">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" class="form-input" id="quantity" value="1" min="1" max="100">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="generateCodes()">
+                    🎫 Generate Codes
+                </button>
+
+                <div id="generatedCodes" style="margin-top: 1.5rem;"></div>
+            </div>
+
+            <!-- Recent Codes -->
+            <div class="admin-section">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Recent Unlock Codes</h2>
+                
+                <div class="code-list" id="codesList">
+                    <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                        Loading codes...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Users -->
+            <div class="admin-section">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Recent Registrations</h2>
+                
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f3f4f6;">
+                                <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e5e7eb;">Name</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e5e7eb;">Email</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e5e7eb;">Status</th>
+                                <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e5e7eb;">Registered</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersList">
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 2rem; color: #6b7280;">
+                                    Loading users...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/api';
+
+        async function loadStatistics() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/statistics`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+
+                document.getElementById('totalUsers').textContent = data.totalUsers;
+                document.getElementById('premiumUsers').textContent = data.premiumUsers;
+                document.getElementById('trialUsers').textContent = data.trialUsers;
+                document.getElementById('totalQuestions').textContent = data.totalQuestions;
+                document.getElementById('totalSessions').textContent = data.totalSessions;
+                document.getElementById('activeCodes').textContent = data.activeCodes;
+            } catch (error) {
+                console.error('Error loading statistics:', error);
+            }
+        }
+
+        async function generateCodes() {
+            const duration = document.getElementById('duration').value;
+            const quantity = document.getElementById('quantity').value;
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/generate-code`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ duration: parseInt(duration), quantity: parseInt(quantity) })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    const codesHTML = data.codes.map(code => `
+                        <div style="background: #eff6ff; padding: 1rem; border-radius: 8px; margin-bottom: 0.5rem;">
+                            <code style="font-size: 1.2rem; font-weight: 600; color: #1e40af;">${code}</code>
+                        </div>
+                    `).join('');
+
+                    document.getElementById('generatedCodes').innerHTML = `
+                        <div class="alert alert-success">
+                            ✅ Generated ${data.codes.length} code(s) successfully!
+                        </div>
+                        ${codesHTML}
+                    `;
+
+                    loadCodes();
+                    loadStatistics();
+                }
+            } catch (error) {
+                console.error('Error generating codes:', error);
+            }
+        }
+
+        async function loadCodes() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/codes`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                const codesList = document.getElementById('codesList');
+
+                if (data.codes.length === 0) {
+                    codesList.innerHTML = `
+                        <div style="text-align: center; padding: 2rem; color: #6b7280;">
+                            No codes generated yet
+                        </div>
+                    `;
+                    return;
+                }
+
+                codesList.innerHTML = data.codes.slice(0, 10).map(code => `
+                    <div class="code-item">
+                        <div>
+                            <div class="code-text">${code.code}</div>
+                            <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.25rem;">
+                                ${code.isUsed ? `Used by: ${code.usedBy?.fullName || 'Unknown'}` : 'Not yet used'}
+                            </div>
+                        </div>
+                        <span class="code-status ${code.isUsed ? 'status-used' : 'status-available'}">
+                            ${code.isUsed ? '✗ Used' : '✓ Available'}
+                        </span>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading codes:', error);
+            }
+        }
+
+        async function loadUsers() {
+            const token = localStorage.getItem('token');
+
+            try {
+                const response = await fetch(`${API_URL}/admin/users`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const data = await response.json();
+                const usersList = document.getElementById('usersList');
+
+                if (data.users.length === 0) {
+                    usersList.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 2rem; color: #6b7280;">
+                                No users registered yet
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+
+                usersList.innerHTML = data.users.slice(0, 10).map(user => {
+                    const status = user.isPremium ? 'Premium' : 'Trial';
+                    const statusClass = user.isPremium ? 'status-available' : 'status-used';
+                    const date = new Date(user.createdAt).toLocaleDateString();
+
+                    return `
+                        <tr style="border-bottom: 1px solid #e5e7eb;">
+                            <td style="padding: 1rem;">${user.fullName}</td>
+                            <td style="padding: 1rem; color: #6b7280;">${user.email}</td>
+                            <td style="padding: 1rem;">
+                                <span class="code-status ${statusClass}">${status}</span>
+                            </td>
+                            <td style="padding: 1rem; color: #6b7280;">${date}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading users:', error);
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+
+        // Check admin access
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+         if (!token || user.role !== 'admin') {
+            window.location.href = '../login.html';
+        }
+       
+
+        // Load data
+        loadStatistics();
+        loadCodes();
+        loadUsers();
+    </script>
+</body>
+</html>
