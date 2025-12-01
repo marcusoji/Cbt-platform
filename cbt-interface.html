@@ -242,7 +242,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                await fetch(`${API_URL}/exam/submit-answer`, {
+                await fetch(`${API_URL}/exam?action=submit-answer`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -369,7 +369,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exam/complete`, {
+                const response = await fetch(`${API_URL}/exam?action=complete`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

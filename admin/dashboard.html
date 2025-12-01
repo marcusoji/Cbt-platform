@@ -256,7 +256,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/statistics`, {
+                const response = await fetch(`${API_URL}/admin?action=statistics`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -281,7 +281,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/generate-code`, {
+                const response = await fetch(`${API_URL}/admin?action=generate-code`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -318,7 +318,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/codes`, {
+                const response = await fetch(`${API_URL}/admin?action=codes`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -358,7 +358,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/users`, {
+                const response = await fetch(`${API_URL}/admin?action=users`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }

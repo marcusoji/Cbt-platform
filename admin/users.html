@@ -128,7 +128,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/users`, {
+                const response = await fetch(`${API_URL}/admin?action=users`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -356,7 +356,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/users/${userId}/premium`, {
+                const response = await fetch(`${API_URL}/admin?action=users&${userId}&premium`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -383,7 +383,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/users/${userId}/premium`, {
+                const response = await fetch(`${API_URL}/admin?action=users&${userId}&premium`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`

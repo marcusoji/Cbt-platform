@@ -9,7 +9,7 @@ async function getExamTypes() {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await fetch(`${API_URL}/exams/types`, {
+    const response = await fetch(`${API_URL}/exams?action=types`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -34,7 +34,7 @@ async function getSubjects(examType) {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await fetch(`${API_URL}/exams/${examType}/subjects`, {
+    const response = await fetch(`${API_URL}/exams?action=${examType}&subjects`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -59,7 +59,7 @@ async function getYears(examType, subject) {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await fetch(`${API_URL}/exams/${examType}/${subject}/years`, {
+    const response = await fetch(`${API_URL}/exams?action=${examType}&${subject}&years`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -84,7 +84,7 @@ async function startExam(examType, subject, year, numberOfQuestions) {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await fetch(`${API_URL}/exam/start`, {
+    const response = await fetch(`${API_URL}/exam?action=start`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ async function submitAnswer(sessionId, questionId, selectedAnswer, markedForRevi
   try {
     const token = localStorage.getItem('token');
     
-    const response = await fetch(`${API_URL}/exam/submit-answer`, {
+    const response = await fetch(`${API_URL}/exam?action=submit-answer`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ async function completeExam(sessionId) {
   try {
     const token = localStorage.getItem('token');
     
-    const response = await fetch(`${API_URL}/exam/complete`, {
+    const response = await fetch(`${API_URL}/exams?action=complete`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

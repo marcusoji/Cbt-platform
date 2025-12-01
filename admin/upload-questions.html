@@ -151,7 +151,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        const API_URL = '/api';
 
         function validateJSON() {
             const jsonData = document.getElementById('questionsJSON').value;
@@ -190,7 +190,7 @@
 
                 const token = localStorage.getItem('token');
 
-                const response = await fetch(`${API_URL}/admin/upload-questions`, {
+                const response = await fetch(`${API_URL}/admin?action=upload-questions`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -236,7 +236,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin/upload-questions`, {
+                const response = await fetch(`${API_URL}/admin?action=upload-questions`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

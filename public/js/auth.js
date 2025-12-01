@@ -7,7 +7,7 @@ const API_URL = '/api';
  */
 async function register(fullName, email, phone, password) {
   try {
-    const response = await fetch(`${API_URL}/auth/register`, {
+    const response = await fetch(`${API_URL}/auth?action=register`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -35,7 +35,7 @@ async function register(fullName, email, phone, password) {
  */
 async function login(email, password) {
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${API_URL}/auth?action=login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -98,7 +98,7 @@ async function getProfile() {
   try {
     const token = getAuthToken();
     
-    const response = await fetch(`${API_URL}/auth/profile`, {
+    const response = await fetch(`${API_URL}/auth?action=profile`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
@@ -141,7 +141,7 @@ async function unlockPremium(code) {
   try {
     const token = getAuthToken();
     
-    const response = await fetch(`${API_URL}/auth/unlock`, {
+    const response = await fetch(`${API_URL}/auth?action=unlock`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

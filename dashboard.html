@@ -166,7 +166,7 @@
             }
 
             try {
-                const response = await fetch(`${API_URL}/auth/profile`, {
+                const response = await fetch(`${API_URL}/auth?action=profile`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -231,7 +231,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exams/${examType}/subjects`, {
+                const response = await fetch(`${API_URL}/exams?action=${examType}&subjects`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -259,7 +259,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exams/${currentExamType}/${subject}/years`, {
+                const response = await fetch(`${API_URL}/exams?action=${currentExamType}&${subject}&years`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -297,7 +297,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exam/start`, {
+                const response = await fetch(`${API_URL}/exam?action=start`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

@@ -108,7 +108,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/auth/unlock`, {
+                const response = await fetch(`${API_URL}/auth?action=unlock`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
