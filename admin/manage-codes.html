@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,8 +13,9 @@
         <div class="container">
             <div class="header-content">
                 <a href="dashboard.html" class="logo">
-                    <div class="logo-icon">👨‍💼</div>
+                    <div class="logo-icon">👨💼</div>
                     <span>Admin Panel</span>
+
                 </a>
                 <nav>
                     <ul>
@@ -28,7 +30,9 @@
         </div>
     </header>
 
-    <div class="container" style="padding: 2rem 0;">
+    <div class="container" style="padding: 
+
+2rem 0;">
         <div class="admin-header">
             <h1>Unlock Code Management</h1>
             <p style="color: #6b7280;">Generate and manage premium access codes</p>
@@ -44,6 +48,7 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
                 <div class="form-group">
                     <label class="form-label">Duration (Months)</label>
+
                     <input type="number" class="form-input" id="duration" value="9" min="1" max="24">
                     <p style="color: #6b7280; font-size: 0.85rem; margin-top: 0.5rem;">
                         How many months of access
@@ -59,6 +64,7 @@
                 </div>
 
                 <div class="form-group">
+
                     <label class="form-label">Action</label>
                     <button class="btn btn-primary btn-full" onclick="generateCodes()" id="generateBtn">
                         🎫 Generate Codes
@@ -103,6 +109,7 @@
                     </thead>
                     <tbody id="codesTableBody">
                         <tr><td colspan="5" style="text-align: center; color: #6b7280;">Loading codes...</td></tr>
+
                     </tbody>
                 </table>
             </div>
@@ -110,7 +117,8 @@
     </div>
 
     <script>
-        const API_URL = '/api'; // Assuming Vercel environment
+        const API_URL = '/api';
+        let allCodes = [];
 
         async function generateCodes() {
             const durationStr = document.getElementById('duration').value;
@@ -120,7 +128,7 @@
             const duration = parseInt(durationStr);
             const quantity = parseInt(quantityStr);
 
-            // FIX: Client-side validation for 400 prevention
+
             if (isNaN(duration) || isNaN(quantity) || quantity < 1 || duration < 1 || quantity > 100) {
                 showAlert('Please ensure duration (1-24 months) and quantity (1-100) are valid numbers.', 'error');
                 return;
@@ -135,7 +143,8 @@
                 const response = await fetch(API_URL + '/admin?action=generate-codes', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json', // FIX: CRITICAL for POST
+
+                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({ duration, quantity })
@@ -146,9 +155,10 @@
                 if (response.ok) {
                     showAlert(`${data.codes.length} codes generated successfully!`, 'success');
                     displayGeneratedCodes(data.codes);
-                    loadCodes(); // Refresh the list
+                    loadCodes();
                 } else {
                     showAlert(data.error || 'Failed to generate codes', 'error');
+
                 }
             } catch (error) {
                 console.error('Generate Code Error:', error);
@@ -164,9 +174,9 @@
             if (!token) return; 
 
             try {
-                // FIX: Corrected action from 'codes' (or empty) to 'get-codes'
                 const response = await fetch(API_URL + '/admin?action=get-codes', { 
                     headers: {
+
                         'Authorization': `Bearer ${token}`
                     }
                 });
@@ -178,18 +188,22 @@
                 }
                 
                 const data = await response.json();
-                displayCodes(data.codes);
+                allCodes = data.codes || [];
+                displayCodes(allCodes);
 
             } catch (error) {
                 console.error('Error loading codes:', error);
+
+                document.getElementById('codesTableBody').innerHTML = 
+                    '<tr><td colspan="5" style="text-align: center; color: red;">Error loading codes</td></tr>';
             }
         }
-
-        // --- Helper Functions ---
 
         function displayGeneratedCodes(codes) {
             const display = document.getElementById('generatedCodesDisplay');
             const list = document.getElementById('generatedCodesList');
+            
+            allCodes = codes; // Store for copy function
             
             list.innerHTML = codes.map(code => `
                 <div style="font-family: monospace; font-size: 1.1rem; padding: 0.25rem 0;">${code}</div>
@@ -198,9 +212,18 @@
             display.style.display = 'block';
         }
 
+        function copyAllCodes() {
+            const codes = allCodes.join('\n');
+            navigator.clipboard.writeText(codes).then(() => {
+                showAlert('All codes copied to clipboard!', 'success');
+            }).catch(err => {
+                showAlert('Failed to copy codes', 'error');
+            });
+        }
+
         function displayCodes(codes) {
             const tableBody = document.getElementById('codesTableBody');
-            tableBody.innerHTML = ''; // Clear previous entries
+            tableBody.innerHTML = '';
 
             const filterType = document.getElementById('filterUsed').value;
             const searchText = document.getElementById('searchCode').value.toLowerCase();
@@ -211,7 +234,8 @@
                                     (filterType === 'used' && code.is_used);
 
                 const searchMatch = code.code.toLowerCase().includes(searchText) ||
-                                    (code.users && (code.users.full_name?.toLowerCase().includes(searchText) || code.users.email?.toLowerCase().includes(searchText)));
+                                    (code.users && (code.users.full_name?.toLowerCase().includes(searchText) || 
+                                    code.users.email?.toLowerCase().includes(searchText)));
                 
                 return isUsedMatch && searchMatch;
             });
@@ -223,18 +247,18 @@
 
             filteredCodes.forEach(code => {
                 const usedStatus = code.is_used 
-                    ? `<span class="badge badge-error">Used by ${code.users.full_name || code.users.email}</span>`
+                    ? `<span class="badge badge-error">Used by ${code.users?.full_name || code.users?.email || 'Unknown'}</span>`
                     : '<span class="badge badge-success">Active</span>';
                 
                 const generatedDate = new Date(code.generated_at).toLocaleDateString();
                 
-                // Calculate expiry date based on generated_at + duration
                 const expiryDateObj = new Date(code.generated_at);
                 expiryDateObj.setMonth(expiryDateObj.getMonth() + code.duration);
                 const expiryDate = expiryDateObj.toLocaleDateString();
 
                 const row = tableBody.insertRow();
                 row.innerHTML = `
+
                     <td>${code.code}</td>
                     <td>${code.duration} months (Exp: ${expiryDate})</td>
                     <td>${usedStatus}</td>
@@ -246,9 +270,8 @@
             });
         }
         
-        document.getElementById('filterUsed').addEventListener('change', loadCodes);
-        document.getElementById('searchCode').addEventListener('input', loadCodes);
-
+        document.getElementById('filterUsed').addEventListener('change', () => displayCodes(allCodes));
+        document.getElementById('searchCode').addEventListener('input', () => displayCodes(allCodes));
 
         async function deleteCode(codeId) {
             if (!confirm(`Are you sure you want to delete code ${codeId}? This cannot be undone.`)) return;
@@ -264,6 +287,7 @@
                 });
 
                 if (response.ok) {
+
                     showAlert('Code deleted successfully', 'success');
                     loadCodes();
                 } else {
@@ -280,6 +304,7 @@
             alertContainer.innerHTML = `
                 <div class="alert alert-${type === 'error' ? 'error' : 'success'}">
                     ${message}
+
                 </div>
             `;
 
@@ -299,10 +324,10 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         
         if (!token || user.role !== 'admin') {
+
             window.location.href = '../login.html';
         }
 
-        // Load codes on page load
         loadCodes();
     </script>
 </body>

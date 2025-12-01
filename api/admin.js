@@ -83,7 +83,7 @@ module.exports = async (req, res) => {
       const { error } = await supabase
         .from('unlock_codes')
         .delete()
-        .eq('id', codeId)
+       .eq('code', codeId)
         .eq('is_used', false); // Only allow deleting unused codes
 
       if (error) throw error;

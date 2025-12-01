@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,6 +17,7 @@
             background: #1f2937;
             color: white;
             padding: 2rem 1rem;
+
         }
 
         .admin-content {
@@ -38,6 +40,7 @@
             padding: 0.75rem 1rem;
             display: block;
             border-radius: 8px;
+
             transition: all 0.3s;
         }
 
@@ -79,6 +82,7 @@
             padding: 2rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
+
         }
 
         .code-list {
@@ -100,6 +104,7 @@
             color: #1f2937;
             font-size: 1.1rem;
         }
+
 
         .code-status {
             padding: 0.25rem 0.75rem;
@@ -134,13 +139,14 @@
         <!-- Sidebar -->
         <div class="admin-sidebar">
             <div class="logo" style="color: white; margin-bottom: 2rem;">
-                <div class="logo-icon">👨‍💼</div>
+                <div class="logo-icon">👨💼</div>
                 <span>Admin Panel</span>
             </div>
 
             <ul class="sidebar-menu">
                 <li><a href="dashboard.html" class="active">📊 Dashboard</a></li>
                 <li><a href="upload-questions.html">📝 Upload Questions</a></li>
+
                 <li><a href="manage-codes.html">🔑 Manage Codes</a></li>
                 <li><a href="users.html">👥 Users</a></li>
                 <li><a href="../dashboard.html">🏠 User Dashboard</a></li>
@@ -154,6 +160,7 @@
                 <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Admin Dashboard</h1>
                 <p style="color: #6b7280;">Manage your CBT platform</p>
             </div>
+
 
             <!-- Statistics -->
             <div class="stats-grid">
@@ -198,6 +205,7 @@
                         <input type="number" class="form-input" id="duration" value="9" min="1" max="24">
                     </div>
 
+
                     <div class="form-group">
                         <label class="form-label">Quantity</label>
                         <input type="number" class="form-input" id="quantity" value="1" min="1" max="100">
@@ -229,6 +237,7 @@
                 <div style="overflow-x: auto;">
                     <table style="width: 100%; border-collapse: collapse;">
                         <thead>
+
                             <tr style="background: #f3f4f6;">
                                 <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e5e7eb;">Name</th>
                                 <th style="padding: 1rem; text-align: left; border-bottom: 2px solid #e5e7eb;">Email</th>
@@ -240,6 +249,7 @@
                             <tr>
                                 <td colspan="4" style="text-align: center; padding: 2rem; color: #6b7280;">
                                     Loading users...
+
                                 </td>
                             </tr>
                         </tbody>
@@ -253,49 +263,56 @@
         const API_URL = '/api';
 
         async function loadStatistics() {
-    const token = localStorage.getItem('token');
-    
-    try {
-        const response = await fetch(API_URL + '/admin?action=statistics', {
-            headers: {
-                'Authorization': `Bearer ${token}`
+            const token = localStorage.getItem('token');
+            
+            try {
+                const response = await fetch(API_URL + '/admin?action=statistics', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load statistics');
+                }
+                
+                const data = await response.json();
+
+                // Update statistics cards
+                document.getElementById('totalUsers').textContent = data.totalUsers;
+                document.getElementById('premiumUsers').textContent = data.premiumUsers;
+                document.getElementById('trialUsers').textContent = data.trialUsers;
+
+                document.getElementById('totalQuestions').textContent = data.totalQuestions;
+                document.getElementById('totalSessions').textContent = data.totalSessions;
+                document.getElementById('activeCodes').textContent = data.activeCodes;
+                
+            } catch (error) {
+                console.error('Error loading statistics:', error);
             }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to load statistics');
         }
-        
-        const data = await response.json();
-
-        // Update statistics cards
-        document.getElementById('totalUsers').textContent = data.totalUsers;
-        document.getElementById('premiumUsers').textContent = data.premiumUsers;
-        document.getElementById('trialUsers').textContent = data.trialUsers;
-        document.getElementById('totalCodes').textContent = data.totalCodes;
-        document.getElementById('activeCodes').textContent = data.activeCodes;
-        document.getElementById('totalQuestions').textContent = data.totalQuestions;
-        document.getElementById('totalSessions').textContent = data.totalSessions;
-        
-    } catch (error) {
-        console.error('Error loading statistics:', error);
-        // You may want to show an alert here
-    }
-}
 
         async function generateCodes() {
-            const duration = document.getElementById('duration').value;
-            const quantity = document.getElementById('quantity').value;
+            const duration = parseInt(document.getElementById('duration').value);
+            const quantity = parseInt(document.getElementById('quantity').value);
+
             const token = localStorage.getItem('token');
 
+            // FIX: Validation
+            if (isNaN(duration) || isNaN(quantity) || quantity < 1 || duration < 1 || quantity > 100) {
+                alert('Please enter valid values');
+                return;
+            }
+
             try {
-                const response = await fetch(`${API_URL}/admin?action=generate-code`, {
+                const response = await fetch(`${API_URL}/admin?action=generate-codes`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ duration: parseInt(duration), quantity: parseInt(quantity) })
+
+                    body: JSON.stringify({ duration, quantity })
                 });
 
                 const data = await response.json();
@@ -308,6 +325,7 @@
                     `).join('');
 
                     document.getElementById('generatedCodes').innerHTML = `
+
                         <div class="alert alert-success">
                             ✅ Generated ${data.codes.length} code(s) successfully!
                         </div>
@@ -316,17 +334,22 @@
 
                     loadCodes();
                     loadStatistics();
+                } else {
+                    alert(data.error || 'Failed to generate codes');
                 }
             } catch (error) {
                 console.error('Error generating codes:', error);
+                alert('Network error');
             }
         }
 
         async function loadCodes() {
+
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin?action=codes`, {
+                // FIX: Correct action name
+                const response = await fetch(`${API_URL}/admin?action=get-codes`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -335,12 +358,11 @@
                 const data = await response.json();
                 const codesList = document.getElementById('codesList');
 
-                if (data.codes.length === 0) {
+                if (!data.codes || data.codes.length === 0) {
                     codesList.innerHTML = `
                         <div style="text-align: center; padding: 2rem; color: #6b7280;">
                             No codes generated yet
-                        </div>
-                    `;
+                        </div>  `;
                     return;
                 }
 
@@ -349,11 +371,11 @@
                         <div>
                             <div class="code-text">${code.code}</div>
                             <div style="font-size: 0.85rem; color: #6b7280; margin-top: 0.25rem;">
-                                ${code.isUsed ? `Used by: ${code.usedBy?.fullName || 'Unknown'}` : 'Not yet used'}
+                                ${code.is_used ? `Used by: ${code.users?.full_name || 'Unknown'}` : 'Not yet used'}
                             </div>
                         </div>
-                        <span class="code-status ${code.isUsed ? 'status-used' : 'status-available'}">
-                            ${code.isUsed ? '✗ Used' : '✓ Available'}
+                        <span class="code-status ${code.is_used ? 'status-used' : 'status-available'}">
+                            ${code.is_used ? '✗ Used' : '✓ Available'}
                         </span>
                     </div>
                 `).join('');
@@ -366,7 +388,8 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin?action=users`, {
+                // FIX: Correct action name
+                const response = await fetch(`${API_URL}/admin?action=get-users`, {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -375,9 +398,8 @@
                 const data = await response.json();
                 const usersList = document.getElementById('usersList');
 
-                if (data.users.length === 0) {
-                    usersList.innerHTML = `
-                        <tr>
+                if (!data.users || data.users.length === 0) {
+                    usersList.innerHTML = `<tr>
                             <td colspan="4" style="text-align: center; padding: 2rem; color: #6b7280;">
                                 No users registered yet
                             </td>
@@ -386,17 +408,19 @@
                     return;
                 }
 
+
                 usersList.innerHTML = data.users.slice(0, 10).map(user => {
-                    const status = user.isPremium ? 'Premium' : 'Trial';
-                    const statusClass = user.isPremium ? 'status-available' : 'status-used';
-                    const date = new Date(user.createdAt).toLocaleDateString();
+                    const status = user.is_premium ? 'Premium' : 'Trial';
+                    const statusClass = user.is_premium ? 'status-available' : 'status-used';
+                    const date = new Date(user.registration_date).toLocaleDateString();
 
                     return `
                         <tr style="border-bottom: 1px solid #e5e7eb;">
-                            <td style="padding: 1rem;">${user.fullName}</td>
+                            <td style="padding: 1rem;">${user.full_name}</td>
                             <td style="padding: 1rem; color: #6b7280;">${user.email}</td>
                             <td style="padding: 1rem;">
                                 <span class="code-status ${statusClass}">${status}</span>
+
                             </td>
                             <td style="padding: 1rem; color: #6b7280;">${date}</td>
                         </tr>
@@ -415,11 +439,12 @@
 
         // Check admin access
         const token = localStorage.getItem('token');
-        const user = JSON.parse(localStorage.getItem('user') || '{}');
-         if (!token || user.role !== 'admin') {
+        const user = 
+
+JSON.parse(localStorage.getItem('user') || '{}');
+        if (!token || user.role !== 'admin') {
             window.location.href = '../login.html';
         }
-       
 
         // Load data
         loadStatistics();

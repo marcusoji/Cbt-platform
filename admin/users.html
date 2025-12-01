@@ -6,6 +6,68 @@
     <title>User Management - Admin</title>
     <link rel="stylesheet" href="../public/css/style.css">
     <link rel="stylesheet" href="../public/css/admin.css">
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .modal-close {
+            font-size: 2rem;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+        .user-details .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-top: 0.5rem;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -35,7 +97,6 @@
         </div>
 
         <div class="card">
-            <!-- Filter and Search -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
                 <div style="flex: 1; max-width: 400px;">
                     <input 
@@ -60,7 +121,6 @@
                 </div>
             </div>
 
-            <!-- Statistics -->
             <div class="stats-row">
                 <div class="stat-card">
                     <div class="stat-label">Total Users</div>
@@ -80,7 +140,6 @@
                 </div>
             </div>
 
-            <!-- Users Table -->
             <div style="overflow-x: auto; margin-top: 2rem;">
                 <table class="admin-table">
                     <thead>
@@ -97,8 +156,7 @@
                     <tbody id="usersTableBody">
                         <tr>
                             <td colspan="7" style="text-align: center; padding: 3rem; color: #6b7280;">
-                                <div class="spinner"></div>
-                                <p>Loading users...</p>
+                                Loading users...
                             </td>
                         </tr>
                     </tbody>
@@ -107,16 +165,13 @@
         </div>
     </div>
 
-    <!-- User Details Modal -->
-    <div id="userModal" class="modal" style="display: none;">
+    <div id="userModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>User Details</h2>
                 <button class="modal-close" onclick="closeModal()">×</button>
             </div>
-            <div id="modalBody" class="modal-body">
-                <!-- User details will be loaded here -->
-            </div>
+            <div id="modalBody" class="modal-body"></div>
         </div>
     </div>
 
@@ -125,48 +180,33 @@
         let allUsers = [];
 
         async function loadUsers() {
-    const token = localStorage.getItem('token');
-    const tableBody = document.getElementById('usersTableBody');
-    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>';
-    
-    try {
-        const response = await fetch(API_URL + '/admin?action=get-users', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        });
+            const token = localStorage.getItem('token');
+            const tableBody = document.getElementById('usersTableBody');
+            tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Loading users...</td></tr>';
+            
+            try {
+                const response = await fetch(API_URL + '/admin?action=get-users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
 
-        if (!response.ok) {
-            throw new Error('Failed to load users');
-        }
-        
-        const data = await response.json();
-        
-        tableBody.innerHTML = ''; // Clear loading message
-
-        if (data.users && data.users.length > 0) {
-            data.users.forEach(user => {
-                const row = tableBody.insertRow();
-                const status = user.is_premium ? 'Premium' : (user.trial_ends_at ? 'Trial' : 'Expired');
-                const statusClass = user.is_premium ? 'badge-premium' : (user.trial_ends_at ? 'badge-trial' : 'badge-expired');
+                if (!response.ok) {
+                    throw new Error('Failed to load users');
+                }
                 
-                row.innerHTML = `
-                    <td>${user.full_name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.phone || 'N/A'}</td>
-                    <td><span class="badge ${statusClass}">${status}</span></td>
-                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
-                `;
-            });
-        } else {
-             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>';
+                const data = await response.json();
+                allUsers = data.users || [];
+                
+                updateStatistics();
+                displayUsers(allUsers);
+
+            } catch (error) {
+                console.error('Error loading users:', error);
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: red;">Error loading users.</td></tr>';
+            }
         }
 
-    } catch (error) {
-        console.error('Error loading users:', error);
-        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading users.</td></tr>';
-    }
-}
         function updateStatistics() {
             const now = new Date();
             
@@ -239,7 +279,7 @@
                         <td>
                             <div style="font-size: 0.9rem;">
                                 📧 ${user.email}<br>
-                                📱 ${user.phone}
+                                📱 ${user.phone || 'N/A'}
                             </div>
                         </td>
                         <td>${statusBadge}</td>
@@ -247,11 +287,11 @@
                         <td>${expiryDate}</td>
                         <td>${registeredDate}</td>
                         <td>
-                            <button onclick="viewUser('${user.id}')" class="btn-icon-view" title="View Details">
-                                👁️
+                            <button onclick="viewUser('${user.id}')" class="btn btn-sm" title="View Details">
+                                👁️ View
                             </button>
                             ${user.role !== 'admin' ? `
-                                <button onclick="togglePremium('${user.id}', ${user.is_premium})" class="btn-icon-edit" title="${user.is_premium ? 'Revoke Premium' : 'Grant Premium'}">
+                                <button onclick="togglePremium('${user.id}', ${user.is_premium})" class="btn btn-sm" title="${user.is_premium ? 'Revoke Premium' : 'Grant Premium'}">
                                     ${user.is_premium ? '🔓' : '🔒'}
                                 </button>
                             ` : ''}
@@ -311,7 +351,7 @@
                     </div>
                     <div class="detail-row">
                         <strong>Phone:</strong>
-                        <span>${user.phone}</span>
+                        <span>${user.phone || 'N/A'}</span>
                     </div>
                     <div class="detail-row">
                         <strong>Role:</strong>
@@ -379,13 +419,13 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin?action=users&${userId}&premium`, {
+                const response = await fetch(`${API_URL}/admin?action=grant-premium`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ months: 9 })
+                    body: JSON.stringify({ userId, months: 9 })
                 });
 
                 if (response.ok) {
@@ -393,7 +433,8 @@
                     closeModal();
                     loadUsers();
                 } else {
-                    alert('Failed to grant premium access');
+                    const data = await response.json();
+                    alert(data.error || 'Failed to grant premium access');
                 }
             } catch (error) {
                 alert('Network error');
@@ -406,7 +447,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/admin?action=users&${userId}&premium`, {
+                const response = await fetch(`${API_URL}/admin?action=revoke-premium&userId=${userId}`, {
                     method: 'DELETE',
                     headers: {
                         'Authorization': `Bearer ${token}`
@@ -418,7 +459,8 @@
                     closeModal();
                     loadUsers();
                 } else {
-                    alert('Failed to revoke premium access');
+                    const data = await response.json();
+                    alert(data.error || 'Failed to revoke premium access');
                 }
             } catch (error) {
                 alert('Network error');
@@ -431,7 +473,6 @@
             window.location.href = '../login.html';
         }
 
-        // Check admin access
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         
@@ -439,10 +480,8 @@
             window.location.href = '../login.html';
         }
 
-        // Load users on page load
         loadUsers();
 
-        // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('userModal');
             if (event.target === modal) {
