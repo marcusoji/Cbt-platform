@@ -180,7 +180,8 @@
                 const user = data.user;
                 const access = data.access;
 
-                document.getElementById('userNameNav').textContent = user.full_name.split(' ')[0];
+               document.getElementById('userName').textContent = user.fullName.split(' ')[0];
+                document.getElementById('userNameNav').textContent = user.fullName.split(' ')[0];
 
                 if (access.hasAccess) {
                     document.getElementById('examSelectionSection').style.display = 'block';
@@ -230,7 +231,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exams?action=${examType}&subjects`, {
+                const response = await fetch(`${API_URL}/exams?action=subjects&examType=${examType}`, { 
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -258,7 +259,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exams?action=${currentExamType}&${subject}&years`, {
+                const response = await fetch(`${API_URL}/exams?action=years&examType=${currentExamType}&subject=${subject}`, { 
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -296,7 +297,7 @@
             const token = localStorage.getItem('token');
 
             try {
-                const response = await fetch(`${API_URL}/exam?action=start`, {
+                const response = await fetch(`${API_URL}/exams?action=start`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

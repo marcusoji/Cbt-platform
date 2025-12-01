@@ -143,7 +143,15 @@ module.exports = async (req, res) => {
       delete user.password;
 
       return successResponse(res, {
-        user,
+        user: { // FIX: Convert full_name to fullName for consistency
+          id: user.id,
+          fullName: user.full_name,
+          email: user.email,
+          role: user.role,
+          isPremium: user.is_premium,
+          premiumExpiresAt: user.premium_expires_at,
+          trialEndsAt: user.trial_ends_at
+        },
         access: {
           hasAccess: isTrialActive || isPremiumActive,
           type: isPremiumActive ? 'premium' : isTrialActive ? 'trial' : 'expired',
