@@ -145,7 +145,15 @@
         async function generateCodes() {
             const duration = parseInt(document.getElementById('duration').value);
             const quantity = parseInt(document.getElementById('quantity').value);
-
+  // FIX: Ensure values are parsed as integers before sending.
+    const durationInt = parseInt(duration);
+    const quantityInt = parseInt(quantity);
+    
+    // FIX: Add basic validation (if the user submits empty/non-numeric fields)
+    if (isNaN(durationInt) || isNaN(quantityInt) || quantityInt < 1) {
+        showAlert('Please enter valid numbers for duration and quantity.', 'error');
+        return;
+    }
             if (quantity > 100) {
                 showAlert('Maximum 100 codes at once', 'error');
                 return;
@@ -155,7 +163,9 @@
             generateBtn.disabled = true;
             generateBtn.textContent = '⏳ Generating...';
 
-            const token = localStorage.getItem('token');
+         
+
+    const token = localStorage.getItem('token');
 
             try {
                 const response = await fetch(`${API_URL}/admin?action=generate-code`, {
@@ -164,7 +174,10 @@
                         'Content-Type': 'application/json',
                         'Authorization': `Bearer ${token}`
                     },
-                    body: JSON.stringify({ duration, quantity })
+                   body: JSON.stringify({ // CRITICAL: Send the required data
+                duration: durationInt, 
+                quantity: quantityInt
+            })
                 });
 
                 const data = await response.json();
@@ -213,16 +226,21 @@
             showAlert('All codes copied to clipboard!', 'success');
         }
 
-        async function loadCodes() {
-            const token = localStorage.getItem('token');
-            const filter = document.getElementById('filterStatus').value;
+       async function loadCodes() {
+    const token = localStorage.getItem('token');
+    
+    if (!token) { // Defense check for missing token
+        showAlert('Authentication failed. Please log in again.', 'error');
+        return;
+    }
 
-            try {
-                const response = await fetch(`${API_URL}/admin?action=codes`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
+    try {
+        const response = await fetch(API_URL + '/admin?action=codes', {
+            headers: {
+                // CRITICAL: Ensure the token is passed correctly
+                'Authorization': `Bearer ${token}` 
+            }
+        });
 
                 const data = await response.json();
                 allCodes = data.codes || [];
