@@ -125,25 +125,48 @@
         let allUsers = [];
 
         async function loadUsers() {
-            const token = localStorage.getItem('token');
-
-            try {
-                const response = await fetch(`${API_URL}/admin?action=users`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const data = await response.json();
-                allUsers = data.users || [];
-
-                updateStatistics();
-                displayUsers(allUsers);
-            } catch (error) {
-                console.error('Error loading users:', error);
+    const token = localStorage.getItem('token');
+    const tableBody = document.getElementById('usersTableBody');
+    tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Loading users...</td></tr>';
+    
+    try {
+        const response = await fetch(API_URL + '/admin?action=get-users', {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to load users');
+        }
+        
+        const data = await response.json();
+        
+        tableBody.innerHTML = ''; // Clear loading message
+
+        if (data.users && data.users.length > 0) {
+            data.users.forEach(user => {
+                const row = tableBody.insertRow();
+                const status = user.is_premium ? 'Premium' : (user.trial_ends_at ? 'Trial' : 'Expired');
+                const statusClass = user.is_premium ? 'badge-premium' : (user.trial_ends_at ? 'badge-trial' : 'badge-expired');
+                
+                row.innerHTML = `
+                    <td>${user.full_name}</td>
+                    <td>${user.email}</td>
+                    <td>${user.phone || 'N/A'}</td>
+                    <td><span class="badge ${statusClass}">${status}</span></td>
+                    <td>${new Date(user.created_at).toLocaleDateString()}</td>
+                `;
+            });
+        } else {
+             tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No users found.</td></tr>';
         }
 
+    } catch (error) {
+        console.error('Error loading users:', error);
+        tableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: red;">Error loading users.</td></tr>';
+    }
+}
         function updateStatistics() {
             const now = new Date();
             

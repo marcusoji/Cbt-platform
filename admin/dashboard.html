@@ -253,27 +253,35 @@
         const API_URL = '/api';
 
         async function loadStatistics() {
-            const token = localStorage.getItem('token');
-
-            try {
-                const response = await fetch(`${API_URL}/admin?action=statistics`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                const data = await response.json();
-
-                document.getElementById('totalUsers').textContent = data.totalUsers;
-                document.getElementById('premiumUsers').textContent = data.premiumUsers;
-                document.getElementById('trialUsers').textContent = data.trialUsers;
-                document.getElementById('totalQuestions').textContent = data.totalQuestions;
-                document.getElementById('totalSessions').textContent = data.totalSessions;
-                document.getElementById('activeCodes').textContent = data.activeCodes;
-            } catch (error) {
-                console.error('Error loading statistics:', error);
+    const token = localStorage.getItem('token');
+    
+    try {
+        const response = await fetch(API_URL + '/admin?action=statistics', {
+            headers: {
+                'Authorization': `Bearer ${token}`
             }
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to load statistics');
         }
+        
+        const data = await response.json();
+
+        // Update statistics cards
+        document.getElementById('totalUsers').textContent = data.totalUsers;
+        document.getElementById('premiumUsers').textContent = data.premiumUsers;
+        document.getElementById('trialUsers').textContent = data.trialUsers;
+        document.getElementById('totalCodes').textContent = data.totalCodes;
+        document.getElementById('activeCodes').textContent = data.activeCodes;
+        document.getElementById('totalQuestions').textContent = data.totalQuestions;
+        document.getElementById('totalSessions').textContent = data.totalSessions;
+        
+    } catch (error) {
+        console.error('Error loading statistics:', error);
+        // You may want to show an alert here
+    }
+}
 
         async function generateCodes() {
             const duration = document.getElementById('duration').value;
