@@ -180,9 +180,12 @@
                 const user = data.user;
                 const access = data.access;
 
-               document.getElementById('userName').textContent = user.fullName.split(' ')[0];
-                document.getElementById('userNameNav').textContent = user.fullName.split(' ')[0];
-
+              // document.getElementById('userName').textContent = user.fullName.split(' ')[0];
+               // document.getElementById('userNameNav').textContent = user.fullName.split(' ')[0];
+// FIX: Add defensive check (use the entire fullName if split fails)
+const userNameDisplay = user.fullName ? user.fullName.split(' ')[0] : (user.email || 'User');
+document.getElementById('userName').textContent = userNameDisplay;
+document.getElementById('userNameNav').textContent = userNameDisplay;
                 if (access.hasAccess) {
                     document.getElementById('examSelectionSection').style.display = 'block';
                     document.getElementById('accessLockedCard').style.display = 'none';
